@@ -3,13 +3,14 @@ https://etcher.io/
 
 Safely remove SD card, put into Raspberry Pi and power on. 
 
-Login locally or over ssh (weewx - none)
+Login locally (using keyboard and monitor) or over SSH (user:weewx - password:none)
+IPv4 address: 192.168.0.201
 
-Resize partitions to fill SD card
+Resize partitions to fill SD card:
 sudo raspi-config
 Advanced -> Expand Filesystem -> Reboot
 
-Edit station info
+Edit station info:
 sudo nano ~/system37/weewx.conf
 
 Make edits in the information section, these should be specific to the station to be assigned: 
@@ -28,16 +29,16 @@ Make edits in the information section, these should be specific to the station t
 
 Save and exit (Ctrl-X) -> 'Y'
 
-Restart weewx service
+Restart weewx service:
 sudo service weewx restart
 
 Setup Ambient weather metstation:
 
 Upgrade to firmware 2.2.7
 Firmware - http://www.aercusinstruments.com/content/downloads/WH2600_V2.2.7.bin
-Tool - http://www.aercusinstruments.com/content/downloads/IP%20Tools%2832bit%29.exe
+Flashing Tool - https://p10.secure.hostingprod.com/@site.ambientweatherstore.com/ssl/iptools/IPTools32bit.exe
 
-Open web interface
+Open web interface:
 
 Configure Local Network - Local Device Network Settings
 IP Address - Static
