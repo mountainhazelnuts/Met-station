@@ -24,6 +24,29 @@ Update the system:
 sudo apt update
 sudo apt upgrade
 
+Enable RTC module:
+sudo nano /boot/config.txt 
+Add at the end:
+	# Enable RTC module
+	dtoverlay=i2c-rtc,ds3231
+Save and exit: Ctrl-X -> Y
+	
+sudo nano /lib/udev/hwclock-set
+
+Change:
+	if [ -e /run/systemd/system ] ; then
+	exit 0
+	fi	
+to:
+	#if [ -e /run/systemd/system ] ; then
+	# exit 0
+	#fi
+	
+Save and exit: Ctrl-X -> Y
+
+Shutdown, power off and install the RTC mddule. 
+http://1.bp.blogspot.com/-Ooq5N4cZh-M/U_IELuJLEEI/AAAAAAAAFko/nXwsOQhYzgI/s1600/RTC.jpg
+
 Create new user for Weewx and add them to the superusers group 
 sudo su
 adduser weewx
@@ -46,13 +69,13 @@ cd weewx-3.7.1
 
 Edit setup.cfg to install in separate directory (/home/weewx/system37)
 
-Install
+Install weewx:
 python setup.py build
 python setup.py install
 
 Set values during install and choose 'simulator' driver
 
-Download an enable 'interceptor' driver
+Download and enable 'interceptor' driver:
 
 wget -O weewx-interceptor.zip https://github.com/matthewwall/weewx-interceptor/archive/master.zip
 cd system37/bin/
