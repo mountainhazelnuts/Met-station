@@ -32,6 +32,20 @@ Save and exit (Ctrl-X) -> 'Y'
 Restart weewx service:
 sudo service weewx restart
 
+Set harware clock to correct time
+Connect Rpi to internet by connecting router WAN to Office LAN
+
+Check date / time is correct:
+sudo service ntp restart
+date
+
+Should show correct date / time
+
+Write time to hardware clock:
+sudo hwclock -w
+check
+sudo hwclock -r
+
 Setup Ambient weather metstation:
 
 Upgrade to firmware 2.2.7
