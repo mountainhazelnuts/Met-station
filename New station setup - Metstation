@@ -1,0 +1,29 @@
+Setup weather metstation:
+
+Upgrade to firmware 2.2.7
+Firmware - http://www.aercusinstruments.com/content/downloads/WH2600_V2.2.7.bin
+Flashing Tool - https://p10.secure.hostingprod.com/@site.ambientweatherstore.com/ssl/iptools/IPTools32bit.exe
+
+Open web interface:
+
+Configure Local Network - Local Device Network Settings
+IP Address - Static
+Static IP Address - 192.168.0.200
+Static subnet mask - 255.255.255.0
+Static default gateway - 192.168.0.1
+Static DNS server - 192.168.0.1
+Server listening port - 5000
+->Apply
+
+Weather network - Weather Station Settings
+Remote Server - Customized
+Server IP - 192.168.0.201
+Server Port - 8080
+Server Type - PHP
+Station ID - 0000 (use unique ID number 001 - 025)
+Password - none
+->Apply
+
+Check live data is coming from remote sensors
+Wait 5 minutes then check weex server:
+http://192.168.0.201/weewx
