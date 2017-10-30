@@ -1,5 +1,6 @@
 Write Met-Station image to SD card using Etcher 
 https://etcher.io/
+https://sourceforge.net/projects/win32diskimager/
 
 Safely remove SD card, put into Raspberry Pi and power on. 
 
