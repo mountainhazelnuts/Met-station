@@ -1,7 +1,7 @@
 Download latest Raspbian lite image from Raspberrypi.org
 https://downloads.raspberrypi.org/raspbian_lite_latest
 
-Write image to SD card using Etcher 
+Write image to SD card (Etcher or Win32DiskImager)
 https://etcher.io/
 
 Mount drive after writing.
@@ -21,17 +21,17 @@ Set new password:
 passwd - qazwsxedc
 
 Update the system:
-sudo apt update
-sudo apt upgrade
+`sudo apt update`
+`sudo apt upgrade`
 
 Enable RTC module:
-sudo nano /boot/config.txt 
+`sudo nano /boot/config.txt `
 Add at the end:
 	# Enable RTC module
 	dtoverlay=i2c-rtc,ds3231
 Save and exit: Ctrl-X -> Y
 	
-sudo nano /lib/udev/hwclock-set
+`sudo nano /lib/udev/hwclock-set`
 
 Change:
 	if [ -e /run/systemd/system ] ; then
@@ -48,43 +48,43 @@ Shutdown, power off and install the RTC mddule.
 http://1.bp.blogspot.com/-Ooq5N4cZh-M/U_IELuJLEEI/AAAAAAAAFko/nXwsOQhYzgI/s1600/RTC.jpg
 
 Create new user for Weewx and add them to the superusers group 
-sudo su
-adduser weewx
-usermod -a -G sudo weewx
+`sudo su`
+`adduser weewx`
+`usermod -a -G sudo weewx`
 
 login as 
 weewx
 none
 
 Install weewx prerequisites
-sudo apt-get install python-configobj python-cheetah python-imaging python-serial python-usb  mysql-client python-mysqldb python-dev python-pip
-sudo pip install pyephem
+`sudo apt-get install python-configobj python-cheetah python-imaging python-serial python-usb  mysql-client python-mysqldb python-dev python-pip`
+`sudo pip install pyephem`
 
 Download weewx 
-wget http://weewx.com/downloads/weewx-3.7.1.tar.gz
+`wget http://weewx.com/downloads/weewx-3.7.1.tar.gz`
 
 Extract
-tar -xvf weewx-3.7.1.tar.gz
-cd weewx-3.7.1
+`tar -xvf weewx-3.7.1.tar.gz`
+`cd weewx-3.7.1`
 
 Edit setup.cfg to install in separate directory (/home/weewx/system37)
 
 Install weewx:
-python setup.py build
-python setup.py install
+`python setup.py build`
+`python setup.py install`
 
 Set values during install and choose 'simulator' driver
 
 Download and enable 'interceptor' driver:
 
-wget -O weewx-interceptor.zip https://github.com/matthewwall/weewx-interceptor/archive/master.zip
+`wget -O weewx-interceptor.zip https://github.com/matthewwall/weewx-interceptor/archive/master.zip`
 cd system37/bin/
 sudo ./wee_extension --install ~/weewx-interceptor.zip
 sudo ./wee_config --reconfigure --driver=user.interceptor --no-prompt
 
 Enable interceptor driver and metric units
 
-sudo nano ~/system37/weewx.conf
+`sudo nano ~/system37/weewx.conf`
 
 [Interceptor]
     driver = user.interceptor
@@ -131,12 +131,11 @@ sudo cp /home/weewx/system37/util/apache/conf.d/weewx.conf /etc/apache2/conf-ava
 Enable config
 a2enconf weewx
 
-Enable services to start at boot
-sudo systemctl enable weewx
-sudo systemctl enable apache2
+Install udisks2 for automounting inserted USB disks
+`sudo apt install udisks2`
 
 Install sqlite interpreter
-apt install sqlite3
+`sudo apt install sqlite3`
 
 Export sqlite3 database to csv (export.csv) 
 sqlite3 /home/weewx/system37/weewx/archive/weewx.sdb ".read archive"
@@ -147,3 +146,8 @@ nano archive
 	.output export.csv
 	select * from archive;
 
+
+Enable services to start at boot
+`sudo systemctl enable weewx`
+`sudo systemctl enable apache2`
+`sud systemctl enable udisks2`
