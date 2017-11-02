@@ -1,0 +1,7 @@
+#USB automount on Raspbian lite 
+
+install udisks2 package
+sudo apt install udisks2
+
+Enable udisks2 service
+sudo systemctl enable udisks2
