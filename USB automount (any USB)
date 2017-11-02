@@ -35,6 +35,7 @@
   else
       /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${FS_LABEL}_${PART}
   fi
+  
 # check if drive mount
   mount
   
