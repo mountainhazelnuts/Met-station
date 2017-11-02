@@ -1,13 +1,41 @@
-#USB automount on Raspbian lite 
+#Automount on Raspbian lite requires udisks2 and pmount package installed
 
-install udisks2 package
-> sudo apt install udisks2
+[udisks2 installation]
 
-Check if service is runnuing 
-> service udisks2 status
+#Install udisks2 package
+  sudo apt install udisks2
 
-if not running enable udisks2 service
-> sudo systemctl enable udisks2
-> sudo systemctl start udisks2
+#Check if service is runnuing 
+  service udisks2 status
 
-reboot 
+#if not running enable udisks2 service
+  sudo systemctl enable udisks2
+  sudo systemctl start udisks2
+
+#restart udisks2 services
+  sudo service udisks2 restart
+
+[udisks2 installation]
+#install pmount
+	sudo apt-get install pmount
+
+#Add the following to > sudo nano /etc/udev/rules.d/usbstick.rules	
+	ACTION=="add", KERNEL=="sd[a-z][0-9]", TAG+="systemd", ENV{SYSTEMD_WANTS}="usbstick-handler@%k"
+
+#Add the following to > sudo nano /lib/systemd/system/usbstick-handler@.service
+	
+#!/bin/bash
+
+  PART=$1
+  FS_LABEL=`lsblk -o name,label | grep ${PART} | awk '{print $2}'`
+
+  if [ -z ${FS_LABEL} ]
+  then
+      /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${PART}
+  else
+      /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${FS_LABEL}_${PART}
+  fi
+# check if drive mount
+  mount
+  
+  ** Your drive will be mounted as sda1 or sdb1 **
