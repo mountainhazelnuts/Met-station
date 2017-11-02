@@ -24,6 +24,10 @@ Station ID - 0000 (use unique ID number 001 - 025)
 Password - none
 ->Apply
 
+Station Settings - DST and Time Zone Setting
+Time Zone - 6
+->Apply
+
 Check live data is coming from remote sensors
 Wait 5 minutes then check weex server:
 http://192.168.0.201/weewx

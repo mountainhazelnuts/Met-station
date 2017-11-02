@@ -6,6 +6,7 @@ Safely remove SD card, put into Raspberry Pi and power on.
 
 Login locally (using keyboard and monitor) or over SSH (user:weewx - password:none)
 IPv4 address: 192.168.0.201
+ssh weewx@192.168.0.201 (username@ip)
 
 Resize partitions to fill SD card:
 sudo raspi-config
