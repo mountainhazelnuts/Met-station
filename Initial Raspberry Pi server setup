@@ -138,7 +138,7 @@ Install sqlite interpreter
 `sudo apt install sqlite3`
 
 Export sqlite3 database to csv (export.csv) 
-sqlite3 /home/weewx/system37/weewx/archive/weewx.sdb ".read archive"
+sqlite3 /home/weewx/system37/archive/weewx.sdb ".read archive"
 
 nano archive
 	.headers on
