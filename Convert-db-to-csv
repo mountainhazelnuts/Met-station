@@ -1,0 +1,26 @@
+#Creat convert-to-csv script
+sudo nano convert-to-csv.sh
+
+#Add following (stop weewx service, covert db to csv with station id_date & time stamp, delete db from table, restarts weewx service)
+sudo service weewx stop
+now=$(date +"%Y-%m-%d-%S")
+        sqlite3 /home/weewx/system37/archive/weewx.sdb<<- EXIT_HERE
+        .mode csv
+        .headers on
+        .output station ID name.$now.csv
+        SELECT * FROM archive;
+		delete from archive;
+        .exit
+        EXIT_HERE
+  echo "Station ID name.$now.csv generated"
+sudo service weewx start 
+*** Edit only station ID name, leave $now ***
+  
+#make the convert-to-csv.sh file executable. To do this, enter below
+sudo chmod +x convert-to-csv
+
+#Now that the shell script has been made executable, we can run it.
+sudo ./convert-to-csv.sh
+
+#your file will be created with file name=station ID.csv
+ls
