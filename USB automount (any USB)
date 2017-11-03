@@ -1,42 +1,60 @@
 #Automount on Raspbian lite requires udisks2 and pmount package installed
 
-[udisks2 installation]
+## [udisks2 installation]
 
 #Install udisks2 package
-  sudo apt install udisks2
+sudo apt install udisks2
 
 #Check if service is runnuing 
-  service udisks2 status
+service udisks2 status
 
 #if not running enable udisks2 service
-  sudo systemctl enable udisks2
-  sudo systemctl start udisks2
+sudo systemctl enable udisks2
+sudo systemctl start udisks2
 
 #restart udisks2 services
-  sudo service udisks2 restart
+sudo service udisks2 restart
 
-[udisks2 installation]
+
+## [pmount installation]
+
 #install pmount
-	sudo apt-get install pmount
+sudo apt-get install pmount
 
 #Add the following to > sudo nano /etc/udev/rules.d/usbstick.rules	
-	ACTION=="add", KERNEL=="sd[a-z][0-9]", TAG+="systemd", ENV{SYSTEMD_WANTS}="usbstick-handler@%k"
+ACTION=="add", KERNEL=="sd[a-z][0-9]", TAG+="systemd", ENV{SYSTEMD_WANTS}="usbstick-handler@%k"
 
 #Add the following to > sudo nano /lib/systemd/system/usbstick-handler@.service
+
+[Unit]
+Description=Mount USB sticks
+BindsTo=dev-%i.device
+After=dev-%i.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/automount %I
+ExecStop=/usr/bin/pumount /dev/%I
+
+Add the following to > sudo nano /usr/local/bin/automount
 	
 #!/bin/bash
 
-  PART=$1
-  FS_LABEL=`lsblk -o name,label | grep ${PART} | awk '{print $2}'`
+PART=$1
+FS_LABEL=`lsblk -o name,label | grep ${PART} | awk '{print $2}'`
 
-  if [ -z ${FS_LABEL} ]
-  then
-      /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${PART}
-  else
-      /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${FS_LABEL}_${PART}
-  fi
+if [ -z ${FS_LABEL} ]
+then
+    /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${PART}
+else
+    /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${FS_LABEL}_${PART}
+fi
   
-# check if drive mount
-  mount
+#Run the following  
+sudo chmod +x /usr/local/bin/automount
+
+#check if your USB is mounted or not
+mount
   
   ** Your drive will be mounted as sda1 or sdb1 **
