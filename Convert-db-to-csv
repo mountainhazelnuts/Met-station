@@ -1,41 +1,46 @@
 #Creat convert-to-csv script
-nano convert-to-csv.sh
+sudo nano convert-to-csv.sh
 
-#Add following (stop weewx service, covert db to csv with station id_date & time stamp, delete db from table, restarts weewx service)
+#Add following (covert db to csv with station id_date & time stamp, delete db from table, restarts weewx service)
 
-!#/bin/sh
-sudo service weewx stop
+#!/bin/sh
 
-sName=MHWS-002_$(date +"%Y-%m-%d-%s") #Change the station name accordingly for all the stations as MHWS-***.
-        sqlite3 /home/weewx/system37/archive/weewx.sdb<<- EXIT_HERE
-        .mode csv
-        .headers on
-        .output $sName.csv
-        SELECT * FROM archive;
-        delete from archive;
-        .exit
-        EXIT_HERE
-  echo "$sName.csv generated"
+systemctl stop weewx
 
-sudo service weewx start
+sName=MHWS-002_$(date +"%Y-%m-%d-%s")
+sqlite3 -header -csv /home/weewx/system37/archive/weewx.sdb "select * from archive;" > /home/weewx/$sName.csv
 
-sudo mv /home/weewx/$sName.csv /media/MUKTI-02_sda1/$sName.csv 
+sqlite3 /home/weewx/system37/archive/weewx.sdb "delete from archive;"
 
+mv /home/weewx/$sName.csv /media/MUKTI-02_sda1/$sName.csv
 
+systemctl restart weewx
+
+echo "$sName.csv generated"
+
+#sName=MHWS-*** (replace with station id)
 #rename all drive to MHWS-*** (with station id)
-  
-#make the convert-to-csv.sh file executable. To do this, enter below
-sudo chmod +x convert-to-csv
 
+#make the convert-to-csv.sh file executable. To do this, enter below
+sudo chmod +x convert-to-csv.sh
+
+
+*** Crontab configuration ***
+#Creat cron allow and deny file
+
+sudo nano /etc/cron.d/cron.allow #add following users to file 
+root
+weewx
+sudo nano /etc/cron.d/cron.deny #save this file as blank.
+
+#configure cron when you want to start your script, refer cron guru for setting the time for your script to run
+#https://crontab.guru
+sudo crontab -e 
+55 16 * * * /home/weewx/convert-to-csv.sh
+ 
 #Now that the shell script has been made executable, we can run it.
 sudo ./convert-to-csv.sh
 
 #your file will be created with file name=station ID.csv
 ls
-
-#configure cron when you want to start your script
-#refer cron guru for setting the time so your script will run
-#https://crontab.guru
-
-55 16 * * * /home/weewx/convert-to-csv.sh
 
