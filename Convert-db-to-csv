@@ -36,7 +36,7 @@ sudo nano /etc/cron.d/cron.deny #save this file as blank.
 #configure cron when you want to start your script, refer cron guru for setting the time for your script to run
 #https://crontab.guru
 sudo crontab -e 
-55 16 * * * /home/weewx/convert-to-csv.sh
+15 18 * * * /home/weewx/convert-to-csv.sh
  
 #Now that the shell script has been made executable, we can run it.
 sudo ./convert-to-csv.sh
