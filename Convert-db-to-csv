@@ -24,7 +24,7 @@ echo "$sName.csv generated"
 #make the convert-to-csv.sh file executable. To do this, enter below
 sudo chmod +x convert-to-csv.sh
 
-
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 *** Crontab configuration ***
 #Creat cron allow and deny file
 
