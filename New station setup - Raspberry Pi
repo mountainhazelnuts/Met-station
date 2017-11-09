@@ -16,7 +16,7 @@ Edit station info:
 > sudo nano ~/system37/weewx.conf
 
 Make edits in the information section, these should be specific to the station to be assigned: 
-----------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 [Station]
 
     # Description of the station location
@@ -28,7 +28,7 @@ Make edits in the information section, these should be specific to the station t
 
     # Altitude of the station, with unit it is in. 
     altitude = 100, meter    # Choose 'foot' or 'meter' for unit
-----------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Save and exit (Ctrl-X) -> 'Y'
 
 Restart weewx service:
