@@ -202,11 +202,9 @@ fi
 Run the following  
 sudo chmod +x /usr/local/bin/automount
 
-check if your USB is mounted or not
+check if your USB is mounted or not, Your drive should be mounted as sda1
 mount
 
-				** Your drive will be mounted as sda1 or sdb1 **
-				
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
 Creat "convert-to-csv" script (This will convert your db from archive to csv)
