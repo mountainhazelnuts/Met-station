@@ -1,6 +1,8 @@
 Download latest Raspbian lite image from Raspberrypi.org
 https://downloads.raspberrypi.org/raspbian_lite_latest
 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 Write image to SD card (Etcher or Win32DiskImager)
 https://etcher.io/
 
@@ -9,7 +11,7 @@ Add "ssh" file to boot partition
 
 Edit config.txt, add:
 
-# Disable wifi and bluetooth
+#Disable wifi and bluetooth
 dtoverlay=pi3-disable-wifi
 dtoverlay=pi3-disable-bt
 
@@ -46,6 +48,8 @@ Save and exit: Ctrl-X -> Y
 
 Shutdown, power off and install the RTC mddule. 
 http://1.bp.blogspot.com/-Ooq5N4cZh-M/U_IELuJLEEI/AAAAAAAAFko/nXwsOQhYzgI/s1600/RTC.jpg
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Create new user for Weewx and add them to the superusers group 
 `sudo su`
@@ -131,9 +135,6 @@ sudo cp /home/weewx/system37/util/apache/conf.d/weewx.conf /etc/apache2/conf-ava
 Enable config
 a2enconf weewx
 
-Install udisks2 for automounting inserted USB disks
-`sudo apt install udisks2`
-
 Install sqlite interpreter
 `sudo apt install sqlite3`
 
@@ -145,7 +146,117 @@ nano archive
 	.mode csv
 	.output export.csv
 	select * from archive;
+	
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+Automount on Raspbian lite requires udisks2 and pmount package installed
+[udisks2 installation]
+
+Install udisks2 package
+sudo apt install udisks2
+
+Check if service is runnuing 
+service udisks2 status
+
+If not running enable udisks2 service
+sudo systemctl enable udisks2
+sudo systemctl start udisks2
+
+restart udisks2 services
+sudo service udisks2 restart
+
+[pmount installation]
+install pmount
+sudo apt-get install pmount
+
+Add the following to > sudo nano /etc/udev/rules.d/usbstick.rules	
+ACTION=="add", KERNEL=="sd[a-z][0-9]", TAG+="systemd", ENV{SYSTEMD_WANTS}="usbstick-handler@%k"
+
+Add the following to > sudo nano /lib/systemd/system/usbstick-handler@.service
+
+[Unit]
+Description=Mount USB sticks
+BindsTo=dev-%i.device
+After=dev-%i.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/automount %I
+ExecStop=/usr/bin/pumount /dev/%I
+
+Add the following to > sudo nano /usr/local/bin/automount
+	
+#!/bin/bash
+
+PART=$1
+FS_LABEL=`lsblk -o name,label | grep ${PART} | awk '{print $2}'`
+
+if [ -z ${FS_LABEL} ]
+then
+    /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${PART}
+else
+    /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${FS_LABEL}_${PART}
+fi
+  
+Run the following  
+sudo chmod +x /usr/local/bin/automount
+
+check if your USB is mounted or not
+mount
+
+				** Your drive will be mounted as sda1 or sdb1 **
+				
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+Creat "convert-to-csv" script (This will convert your db from archive to csv)
+sudo nano convert-to-csv.sh
+
+Add following (covert db to csv with station id_date & time stamp, delete db from table, restarts weewx service)
+
+#!/bin/sh
+
+systemctl stop weewx
+
+sName=MHWS-002_$(date +"%Y-%m-%d-%s")
+sqlite3 -header -csv /home/weewx/system37/archive/weewx.sdb "select * from archive;" > /home/weewx/$sName.csv
+
+sqlite3 /home/weewx/system37/archive/weewx.sdb "delete from archive;"
+
+mv /home/weewx/$sName.csv /media/MUKTI-02_sda1/$sName.csv
+
+systemctl restart weewx
+
+echo "$sName.csv generated"
+
+sName=MHWS-*** (replace with station id)
+rename all drive to MHWS-*** (with station id)
+
+make the convert-to-csv.sh file executable. To do this, enter below
+sudo chmod +x convert-to-csv.sh
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+*** Crontab configuration ***
+Creat cron allow and deny file
+
+sudo nano /etc/cron.d/cron.allow #add following users to file 
+root
+weewx
+sudo nano /etc/cron.d/cron.deny #save this file as blank.
+
+configure cron when you want to start your script, refer cron guru for setting the time for your script to run
+https://crontab.guru
+sudo crontab -e 
+15 18 * * * /home/weewx/convert-to-csv.sh
+ 
+Now that the shell script has been made executable, we can run it.
+sudo ./convert-to-csv.sh
+
+your file will be created with file name=station ID.csv
+ls
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Check the status and enable services if its not running.
 
 Enable services to start at boot
 `sudo systemctl enable weewx`
