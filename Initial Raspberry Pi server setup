@@ -221,14 +221,14 @@ sqlite3 -header -csv /home/weewx/system37/archive/weewx.sdb "select * from archi
 
 sqlite3 /home/weewx/system37/archive/weewx.sdb "delete from archive;"
 
-mv /home/weewx/$sName.csv /media/MUKTI-02_sda1/$sName.csv
+mv /home/weewx/$sName.csv /media/sda1/$sName.csv
 
 systemctl restart weewx
 
 echo "$sName.csv generated"
 
 sName=MHWS-*** (replace with station id)
-rename all drive to MHWS-*** (with station id)
+donot make any lable to USB drive
 
 make the convert-to-csv.sh file executable. To do this, enter below
 sudo chmod +x convert-to-csv.sh
