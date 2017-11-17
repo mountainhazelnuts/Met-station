@@ -12,11 +12,13 @@ Resize partitions to fill SD card:
 > sudo raspi-config
 Advanced -> Expand Filesystem -> Reboot
 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 Edit station info:
 > sudo nano ~/system37/weewx.conf
 
 Make edits in the information section, these should be specific to the station to be assigned: 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 [Station]
 
     # Description of the station location
@@ -28,8 +30,12 @@ Make edits in the information section, these should be specific to the station t
 
     # Altitude of the station, with unit it is in. 
     altitude = 100, meter    # Choose 'foot' or 'meter' for unit
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 Save and exit (Ctrl-X) -> 'Y'
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+sudo nano convert-to-csv.sh
+change the sName: station id
 
 Restart weewx service:
 > sudo service weewx restart
