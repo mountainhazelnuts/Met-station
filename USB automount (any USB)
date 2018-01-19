@@ -49,6 +49,8 @@ then
 else
     /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${FS_LABEL}_${PART}
 fi
+
+/home/weewx/convert-to-csv.sh
   
 #Run the following  
 sudo chmod +x /usr/local/bin/automount

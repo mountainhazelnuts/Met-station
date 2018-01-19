@@ -7,11 +7,17 @@ sudo nano convert-to-csv.sh
 
 systemctl stop weewx
 
-sName=MHWS-002_$(date +"%Y-%m-%d-%s")
+sName=TA19-VA_$(date +"%Y-%m-%d-%s")
+sCount=TA19-VA-Count_$(date +"%Y-%m-%d-%s")
+
 sqlite3 -header -csv /home/weewx/system37/archive/weewx.sdb "select * from archive;" > /home/weewx/$sName.csv
 
-sqlite3 /home/weewx/system37/archive/weewx.sdb "delete from archive;"
+#sqlite3 /home/weewx/system37/archive/weewx.sdb "delete from archive;"
 
+sqlite3 /home/weewx/system37/archive/weewx.sdb "SELECT count(*) FROM archive;" > /home/weewx/$sCount.txt
+echo "$sCount.txt generated"
+
+mv /home/weewx/$sCount.txt /media/sda1/$sCount.txt
 mv /home/weewx/$sName.csv /media/sda1/$sName.csv
 
 systemctl restart weewx

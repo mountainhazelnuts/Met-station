@@ -198,6 +198,7 @@ then
 else
     /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${FS_LABEL}_${PART}
 fi
+/home/weewx/convert-to-csv.sh
   
 Run the following  
 sudo chmod +x /usr/local/bin/automount
@@ -217,11 +218,16 @@ Add following (covert db to csv with station id_date & time stamp, delete db fro
 systemctl stop weewx
 
 sName=MHWS-002_$(date +"%Y-%m-%d-%s")
+sCount=TA19-VA-Count_$(date +"%Y-%m-%d-%s")
 sqlite3 -header -csv /home/weewx/system37/archive/weewx.sdb "select * from archive;" > /home/weewx/$sName.csv
 
-sqlite3 /home/weewx/system37/archive/weewx.sdb "delete from archive;"
+#sqlite3 /home/weewx/system37/archive/weewx.sdb "delete from archive;"
+
+sqlite3 /home/weewx/system37/archive/weewx.sdb "SELECT count(*) FROM archive;" > /home/weewx/$sCount.txt
+echo "$sCount.txt generated"
 
 mv /home/weewx/$sName.csv /media/sda1/$sName.csv
+mv /home/weewx/$sCount.txt /media/sda1/$sCount.txt
 
 systemctl restart weewx
 
@@ -246,7 +252,7 @@ sudo nano /etc/cron.d/cron.deny #save this file as blank.
 configure cron when you want to start your script, refer cron guru for setting the time for your script to run
 https://crontab.guru
 sudo crontab -e 
-15 18 * * * /home/weewx/convert-to-csv.sh
+* * * * * /path/to/sript/script_name
  
 Now that the shell script has been made executable, we can run it.
 sudo ./convert-to-csv.sh
