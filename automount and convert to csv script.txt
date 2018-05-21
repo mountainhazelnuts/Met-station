@@ -1,0 +1,48 @@
+sudo nano /usr/local/bin/automount
+
+#!/bin/bash
+
+PART=$1
+FS_LABEL=`lsblk -o name,label | grep ${PART} | awk '{print $2}'`
+
+if [ -z ${FS_LABEL} ]
+then
+    /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${PART}
+else
+    /usr/bin/pmount --umask 000 --noatime -w --sync /dev/${PART} /media/${FS_LABEL}_${PART}
+fi
+
+/home/weewx/convert-to-csv.sh
+
+
+sudo nano convert-to-csv.sh
+
+#!/bin/sh
+
+systemctl stop weewx
+
+sName=TA02-DO_$(date +"%Y-%m-%d-%s")
+sCount=TA02-DO-Count_$(date +"%Y-%m-%d-%s")
+
+sqlite3 -header -csv /home/weewx/system37/archive/weewx.sdb "select * from archive;" > /home/weewx/$sName.csv
+
+sqlite3 /home/weewx/system37/archive/weewx.sdb "SELECT count(*) FROM archive;" > /home/weewx/$sCount.txt
+
+#sqlite3 /home/weewx/system37/archive/weewx.sdb "delete from archive;"
+
+mv /home/weewx/$sName.csv /media/sda1/$sName.csv
+
+mv /home/weewx/$sCount.txt /media/sda1/$sCount.txt
+
+
+echo "$sName.csv generated"
+echo "$sCount.txt generated"
+
+systemctl restart weewx
+
+
+sudo crontab -e
+* * * * * /path/to/sript/script_name
+replace with above edit
+
+
