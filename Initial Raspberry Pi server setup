@@ -7,30 +7,62 @@ Write image to SD card (Etcher or Win32DiskImager)
 https://etcher.io/
 
 Mount drive after writing.
-Add "ssh" file to boot partition
-
-Edit config.txt, add:
-
-#Disable wifi and bluetooth
-dtoverlay=pi3-disable-wifi
-dtoverlay=pi3-disable-bt
+Add "ssh" file to boot partition without any file extension
 
 Safely remove SD card, put into Raspberry Pi and power on. 
 Find the IP of the raspberry through IP scanner or Router interface.
 
-Login over ssh (pi - raspberry)
-Set new password:
-passwd - qazwsxedc
+Find the IP of the raspberry through angry IP scanner
+https://angryip.org/download/#windows
+
+
+login using following 
+ssh@ raspberry IP address
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+if need to remove known host from the list then run below.
+cd .ssh
+dir [find the name of the host]
+rm .\known_hosts
+
+
+
+Resize partitions to fill SD card:
+> sudo raspi-config
+Advanced -> Expand Filesystem -> Reboot
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Update the system:
 `sudo apt update`
 `sudo apt upgrade`
 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Create new user for Weewx and add them to the superusers group 
+`sudo su`
+`adduser weewx`
+`usermod -a -G sudo weewx`
+
+login as 
+weewx
+none
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Enable RTC module:
-`sudo nano /boot/config.txt `
+`sudo nano /boot/config.txt`
+
 Add at the end:
-	# Enable RTC module
-	dtoverlay=i2c-rtc,ds3231
+
+#Disable wifi and bluetooth
+dtoverlay=pi3-disable-wifi
+dtoverlay=pi3-disable-bt
+
+# Enable RTC module
+dtoverlay=i2c-rtc,ds3231
+	
+	
 Save and exit: Ctrl-X -> Y
 	
 `sudo nano /lib/udev/hwclock-set`
@@ -51,36 +83,51 @@ http://1.bp.blogspot.com/-Ooq5N4cZh-M/U_IELuJLEEI/AAAAAAAAFko/nXwsOQhYzgI/s1600/
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Create new user for Weewx and add them to the superusers group 
-`sudo su`
-`adduser weewx`
-`usermod -a -G sudo weewx`
 
-login as 
-weewx
-none
+#Install weewx prerequisites (installing all the prerequisites at once)
 
-Install weewx prerequisites
-`sudo apt-get install python-configobj python-cheetah python-imaging python-serial python-usb  mysql-client python-mysqldb python-dev python-pip`
+sudo apt-get install python-configobj python-cheetah sudo apt-get install python-pil python-serial python-usb python-dev python-pip
+
+# If the above installation fails then try intalling the prerequisites individually.
+
+	sudo apt-get install python-configobj
+	sudo apt-get install python-cheetah 
+	sudo apt-get install python-pil 
+	sudo apt-get install python-serial 
+	sudo apt-get install python-usb  
+#mysql-client  "this is not required as we are using sqlite3"
+#python-mysqldb "this is not required as we are using sqlite3"
+	sudo apt-get install python-dev 
+	sudo apt-get install python-pip
+	
 `sudo pip install pyephem`
 
+'cd /home/weewx/'
+pwd [check the current working folder]
 Download weewx 
-`wget http://weewx.com/downloads/weewx-3.7.1.tar.gz`
+`sudo wget http://weewx.com/downloads/weewx-3.9.1.tar.gz`
 
 Extract
-`tar -xvf weewx-3.7.1.tar.gz`
-`cd weewx-3.7.1`
+`tar -xvf weewx-3.9.1.tar.gz`
+`cd weewx-3.9.1`
 
-Edit setup.cfg to install in separate directory (/home/weewx/system37)
+Edit (sudo nano setup.cfg) to install in separate directory (/home/weewx/system37)
+
 
 Install weewx:
 `python setup.py build`
 `python setup.py install`
 
+if the above says cannot find confiobj  
+'sudo apt-get install python-pip'
+'cd ..' then install 'sudo pip install configobj'
+
 Set values during install and choose 'simulator' driver
 
 Download and enable 'interceptor' driver:
 
+In home folder 
+cd ~
 `wget -O weewx-interceptor.zip https://github.com/matthewwall/weewx-interceptor/archive/master.zip`
 cd system37/bin/
 sudo ./wee_extension --install ~/weewx-interceptor.zip
@@ -90,17 +137,20 @@ Enable interceptor driver and metric units
 
 `sudo nano ~/system37/weewx.conf`
 
-[Interceptor]
+[Interceptor] (in this section there should be only the below given lines)
     driver = user.interceptor
     device_type = observer
     port = 8080
+
 	
 [StdConvert]
  target_unit = METRICWX
 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++	
+
 Setup systemd weewx service	
 
-$ sudo nano /etc/systemd/system/weewx.service
+$ sudo nano /etc/systemd/system/weewx.service (copy the following and paste it)
 
 	# systemd configuration for weewx
 
@@ -121,34 +171,39 @@ $ sudo nano /etc/systemd/system/weewx.service
 	[Install]
 	WantedBy=multi-user.target
 
-Install apapche 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The below section is for installing apache for viewing the live incoming data, installation is not reqiured.
+
+#Install apapche 
 
 sudo apt install apache2 apache2-utils apache2-doc
 
 Edit weewx apache conf shippet
 
 sudo nano /home/weewx/system37/util/apache/conf.d/weewx.conf
-Edit paths
+
+Edit paths (directory)
+
+/home/weewx/system37/public_html
 
 sudo cp /home/weewx/system37/util/apache/conf.d/weewx.conf /etc/apache2/conf-available/
 
 Enable config
-a2enconf weewx
+sudo a2enconf weewx
+
+sudo systemctl reload apache2
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Install sqlite interpreter
 `sudo apt install sqlite3`
 
-Export sqlite3 database to csv (export.csv) 
-sqlite3 /home/weewx/system37/archive/weewx.sdb ".read archive"
-
-nano archive
-	.headers on
-	.mode csv
-	.output export.csv
-	select * from archive;
 	
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+sudo apt-get install mc
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Automount on Raspbian lite requires udisks2 and pmount package installed
 [udisks2 installation]
 
@@ -260,9 +315,33 @@ sudo ./convert-to-csv.sh
 your file will be created with file name=station ID.csv
 ls
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Set harware clock to correct time
+Connect Rpi to internet by connecting router WAN to Office LAN
+
+Check date / time is correct:
+> sudo service ntp restart
+> date
+
+Should show correct date / time
+
+Write time to hardware clock:
+> sudo hwclock -w
+check
+> sudo hwclock -r
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 Check the status and enable services if its not running.
 
 Enable services to start at boot
 `sudo systemctl enable weewx`
-`sudo systemctl enable apache2`
-`sud systemctl enable udisks2`
+#`sudo systemctl enable apache2`
+`sudo systemctl enable udisks2`
+
+
+
+
+
+
+

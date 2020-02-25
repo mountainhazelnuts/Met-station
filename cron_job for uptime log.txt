@@ -1,0 +1,9 @@
+#This will help you to log the device uptime every after a hour and five minutes
+#you need to update the move script when the USB drive is detected.
+
+sudo crontab -e
+
+@reboot echo "$(date) - reboot" >> /home/weewx/uptime.log
+5 * * * * /bin/date >> /home/weewx/uptime.log
+
+

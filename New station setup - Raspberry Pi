@@ -8,9 +8,6 @@ Login locally (using keyboard and monitor) or over SSH (user:weewx - password:no
 IPv4 address: 192.168.0.201
 > ssh weewx@192.168.0.201
 
-Resize partitions to fill SD card:
-> sudo raspi-config
-Advanced -> Expand Filesystem -> Reboot
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -32,6 +29,7 @@ Make edits in the information section, these should be specific to the station t
     altitude = 100, meter    # Choose 'foot' or 'meter' for unit
 
 Save and exit (Ctrl-X) -> 'Y'
+
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 sudo nano convert-to-csv.sh
@@ -48,7 +46,7 @@ Check date / time is correct:
 > date
 
 Should show correct date / time
-
+rm
 Write time to hardware clock:
 > sudo hwclock -w
 check

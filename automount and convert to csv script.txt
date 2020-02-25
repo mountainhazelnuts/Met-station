@@ -14,15 +14,20 @@ fi
 
 /home/weewx/convert-to-csv.sh
 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+#Run the following  
+sudo chmod +x /usr/local/bin/automount
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 sudo nano convert-to-csv.sh
 
 #!/bin/sh
 
 systemctl stop weewx
 
-sName=TA02-DO_$(date +"%Y-%m-%d-%s")
-sCount=TA02-DO-Count_$(date +"%Y-%m-%d-%s")
+sName=TA00-DO_$(date +"%Y-%m-%d-%s")
+sCount=TA00-DO-Count_$(date +"%Y-%m-%d-%s")
 
 sqlite3 -header -csv /home/weewx/system37/archive/weewx.sdb "select * from archive;" > /home/weewx/$sName.csv
 
@@ -34,15 +39,19 @@ mv /home/weewx/$sName.csv /media/sda1/$sName.csv
 
 mv /home/weewx/$sCount.txt /media/sda1/$sCount.txt
 
+mv /home/weewx/uptime.log /media/sda1/uptime.log
+
 
 echo "$sName.csv generated"
 echo "$sCount.txt generated"
 
 systemctl restart weewx
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+make the convert-to-csv.sh file executable. To do this, enter below
+sudo chmod +x convert-to-csv.sh
 
-sudo crontab -e
-* * * * * /path/to/sript/script_name
-replace with above edit
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 
 

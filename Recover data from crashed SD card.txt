@@ -1,0 +1,13 @@
+Copy the backuped database file for recovery from working raspberry pi
+
+scp "E:\Aws data recover\TA06\archive\weewx.sdb(location of your saved database)" /home/weewx/system37/archive/
+
+
+
+
+
+scp "C:\Users\Sonam Wangchuk\Desktop\archive\weewx.sdb" /home/weewx/system37/archive/
+
+
+
+scp "media\sda1\archive\weewx.sdb" /home/weewx/system37/archive/

@@ -1,0 +1,10 @@
+Force the screen to stay on:
+
+From an SSH session in PuttySSH or a terminal session on the Raspberry Pi itself:
+
+$ sudo nano /etc/lightdm/lightdm.conf
+Add the following lines to the [SeatDefaults] section:
+
+# don't sleep the screen
+xserver-command=X -s 0 dpms
+CTRL+x to exit, Y to save then enter to accept the filename

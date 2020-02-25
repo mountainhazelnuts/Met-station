@@ -36,6 +36,8 @@ RemainAfterExit=yes
 ExecStart=/usr/local/bin/automount %I
 ExecStop=/usr/bin/pumount /dev/%I
 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 Add the following to > sudo nano /usr/local/bin/automount
 	
 #!/bin/bash
@@ -51,7 +53,9 @@ else
 fi
 
 /home/weewx/convert-to-csv.sh
-  
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
+
 #Run the following  
 sudo chmod +x /usr/local/bin/automount
 
